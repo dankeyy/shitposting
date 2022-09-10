@@ -2,20 +2,20 @@
 
 import macros
 
-type estring = distinct string
+macro rekt{str}(str: string{lit}): untyped =
 
+  template beitIt(str: string): string = {.noRewrite.}:
+    var s = ""
+    for c in str:
+      s &= (
+            if c in "aeiuo":
+              c & "b" & c
+            else:
+              $c
+      )
+    s
 
-proc beitIt(xs: estring): string {.noinline.} =
-  for x in string(xs):
-    result &= (if x in "aeiuo": x & "b" & x else: $x)
-
-
-macro rekt{s}(s: string{lit}): untyped =
-
-  template genStuff(str: untyped): untyped = {.noRewrite.}:
-      beitIt(estring(str))
-
-  result = getAst(genStuff(s))
+  result = getAst(beitIt(str))
 
 
 echo "ani ohev otach"
