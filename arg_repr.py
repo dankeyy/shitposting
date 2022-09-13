@@ -4,15 +4,31 @@ import inspect
 # helpers
 eprint = functools.partial(print, end='\n---------------------\n')
 
+def raw(string):
+    return string.replace('"', r'\"')
+
 def _parens(code):
     opening = closing = 0
+    marks = []
 
     for i, v in enumerate(code):
-        if   v == '(': opening += 1
-        elif v == ')': closing += 1
+        if code[i-1] != '\\':
 
-        if closing > opening:
-            return i
+            if v in ("'", '"'):
+                marks.append(v)
+
+            elif marks and marks[-1] == v:
+                marks.pop()
+
+                if not marks:
+                    return i
+
+            if len(marks) != 1 or (len(marks) == 2 and marks[0] != marks[1]):
+                if   v == '(': opening += 1
+                elif v == ')': closing += 1
+
+            if closing > opening:
+                return i
 
 
 def myargs_repr():
@@ -48,6 +64,17 @@ def f(*args):
 
 
 eprint()
+
+
+assert f("(") == "\"(\""
+assert f("foo'bar") == "\"foo'bar\"", f("foo'bar")
+assert f("foo\"bar") == r'''"foo\"bar"'''
+assert f('foo\"bar') == r"'foo\"bar'"
+assert f("foo\"bar(") == r'"foo\"bar("'
+
+
+eprint(f("    ("
+         ))
 
 cool = 2
 eprint(f(cool))
@@ -90,3 +117,29 @@ assert f((lambda: 1)())  == "(lambda: 1)()"
 assert f((1,2, 3))  == "(1,2, 3)"
 assert f( [1,2,3] )  == " [1,2,3] "
 assert f("banana") == "\"banana\""
+
+
+# output:
+# ---------------------
+# "("
+# ---------------------
+# cool
+# ---------------------
+#
+#         banana,
+#         lambda: 1,
+#         (lambda: 2)(),
+#         object(),
+#         1,
+#         2
+#
+# ---------------------
+#
+#    "from g scope"
+#
+# ---------------------
+#
+#     1,
+#         2
+#
+# ---------------------
