@@ -16,7 +16,7 @@ def _parens(code):
             elif marks and marks[-1] == v:
                 marks.pop()
 
-                if not marks: # ?
+                if not marks:
                     return i
 
         if len(marks) != 1:
@@ -59,7 +59,7 @@ def f(*args):
     return myargs_repr()
 
 
-# test it -------------------------------------------
+# test it ------------------------------------------------------------------------------------------
 eprint = functools.partial(print, end='\n---------------------\n')
 eprint()
 
