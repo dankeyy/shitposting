@@ -1,15 +1,14 @@
 import functools
 import inspect
 
-# helpers
-eprint = functools.partial(print, end='\n---------------------\n')
 
 def _parens(code):
     opening = closing = 0
     marks = []
 
-    for i, v in enumerate(code):
-        if code[i-1] != '\\':
+    for i, v in enumerate(code + '\n'):
+
+        if code[i-1] != '\\' or code[i-2:i] == "\\\\":
 
             if v in ("'", '"'):
                 marks.append(v)
@@ -17,15 +16,15 @@ def _parens(code):
             elif marks and marks[-1] == v:
                 marks.pop()
 
-                if not marks:
+                if not marks: # ?
                     return i
 
-            if len(marks) != 1:
-                if   v == '(': opening += 1
-                elif v == ')': closing += 1
+        if len(marks) != 1:
+            if   v == '(': opening += 1
+            elif v == ')': closing += 1
 
-            if closing > opening:
-                return i
+        if closing > opening:
+            return i
 
 
 def myargs_repr():
@@ -60,22 +59,24 @@ def f(*args):
     return myargs_repr()
 
 
+# test it -------------------------------------------
+eprint = functools.partial(print, end='\n---------------------\n')
 eprint()
 
-
-assert f("(") == "\"(\""
-assert f("foo'bar") == "\"foo'bar\"", f("foo'bar")
-assert f("foo\"bar") == r'''"foo\"bar"'''
-assert f('foo\"bar') == r"'foo\"bar'"
-assert f("foo\"bar(") == r'"foo\"bar("'
-
-
+eprint(f('get', 'rekt'))
+got = rekt = 0
+eprint(f(rekt, got))
+eprint(f(""))
+eprint(f("\\"))
+eprint(f("a\\"))
+eprint(f("\\a"))
 eprint(f("    ("
          ))
 
 cool = 2
 eprint(f(cool))
 
+eprint(f(x := 'banana'))
 
 banana = 2
 eprint(
@@ -104,10 +105,18 @@ eprint(f(
 
 
 # some more sane tests
-def g():
+assert f("a\\") == r'"a\\"'
+assert f("\\") == r'"\\"'
+assert f("foo\"bar(") == r'"foo\"bar("', f("foo\"bar(")
+assert f("(") == "\"(\"", f("(")
+assert f("foo'bar") == "\"foo'bar\"", f("foo'bar")
+assert f("foo\"bar") == r'''"foo\"bar"'''
+assert f('foo\"bar') == r"'foo\"bar'"
+
+def k():
     assert f(banana, 2) == "banana, 2", f(banana, 2)
     assert f(2) == "2"
-g()
+k()
 
 
 assert f((lambda: 1)())  == "(lambda: 1)()"
@@ -118,26 +127,38 @@ assert f("banana") == "\"banana\""
 
 # output:
 # ---------------------
+# 'get', 'rekt'
+# ---------------------
+# rekt, got
+# ---------------------
+# ""
+# ---------------------
+# "\\"
+# ---------------------
+# "a\\"
+# ---------------------
+# "\\a"
+# ---------------------
 # "    ("
-#
+
 # ---------------------
 # cool
 # ---------------------
-#
+
 #         banana,
 #         lambda: 1,
 #         (lambda: 2)(),
 #         object(),
 #         1,
 #         2
-#
+
 # ---------------------
-#
-#    "from g scope"
-#
+
+#     "from g scope"
+
 # ---------------------
-#
+
 #     1,
 #         2
-#
+
 # ---------------------
