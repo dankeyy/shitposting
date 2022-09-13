@@ -4,9 +4,6 @@ import inspect
 # helpers
 eprint = functools.partial(print, end='\n---------------------\n')
 
-def raw(string):
-    return string.replace('"', r'\"')
-
 def _parens(code):
     opening = closing = 0
     marks = []
