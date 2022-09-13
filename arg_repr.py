@@ -23,7 +23,7 @@ def _parens(code):
                 if not marks:
                     return i
 
-            if len(marks) != 1 or (len(marks) == 2 and marks[0] != marks[1]):
+            if len(marks) != 1:
                 if   v == '(': opening += 1
                 elif v == ')': closing += 1
 
