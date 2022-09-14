@@ -6,7 +6,7 @@ def _parens(code):
     opening = closing = 0
     marks = []
 
-    for i, v in enumerate(code + '\n'):
+    for i, v in enumerate(code):
 
         if code[i-1] != '\\' or code[i-2:i] == "\\\\":
 
@@ -62,6 +62,10 @@ def f(*args):
 # test it ------------------------------------------------------------------------------------------
 eprint = functools.partial(print, end='\n---------------------\n')
 eprint()
+
+eprint(f("("))
+eprint(f("\""))
+eprint(f(r"\""))
 
 eprint(f('get', 'rekt'))
 got = rekt = 0
@@ -127,6 +131,12 @@ assert f("banana") == "\"banana\""
 
 # output:
 # ---------------------
+# "("
+# ---------------------
+# "\""
+# ---------------------
+# r"\""
+# ---------------------
 # 'get', 'rekt'
 # ---------------------
 # rekt, got
@@ -143,6 +153,8 @@ assert f("banana") == "\"banana\""
 
 # ---------------------
 # cool
+# ---------------------
+# x := 'banana'
 # ---------------------
 
 #         banana,
