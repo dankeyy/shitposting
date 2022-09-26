@@ -1,2 +1,1 @@
-# cursed-garbage
-bad code, good shitposting
+#  bad code, good shitposting
