@@ -6,6 +6,6 @@ with open(sysconfig.get_paths()['stdlib'] + '/this.py') as f:
 
 a = ast.parse(txt)
 a.body[0].value.value = input()
-exec(compile(a, '<string>', 'exec'))
+exec(compile(a, '<ast>', 'exec'))
 
 # /stdin yznb -> lmao
