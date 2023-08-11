@@ -1,9 +1,9 @@
 # works only for handlers predefined before the try block
 # im not _that_ motivated
 
-def revive_exception_handlers(func):
-    import ast, inspect
+import ast, inspect
 
+def revive_exception_handlers(func):
     class RewriteTry(ast.NodeTransformer):
         def visit_Try(self, node):
 
@@ -68,15 +68,12 @@ def revive_exception_handlers(func):
             return node
 
     def wrapped(*args, **kwargs):
-        import ast
         try:
             tree = ast.parse(inspect.getsource(func))
         except OSError:
             return func(*args, **kwargs)
         tree = ast.parse(inspect.getsource(func))
         tree = ast.fix_missing_locations(RewriteTry().visit(tree))
-
-        print(ast.unparse(tree))
         func.__code__ = compile(tree, '<ast>', 'exec').co_consts[0]
         return func(*args, **kwargs)
     return wrapped
